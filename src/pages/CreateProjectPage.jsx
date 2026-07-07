@@ -31,7 +31,8 @@ export default function CreateProjectPage() {
   const [files, setFiles] = useState({
     focusVideo: null,
     breakVideo: null,
-    audio: null
+    audio: null,
+    breakAudio: null
   });
 
   const estimatedDuration = useMemo(() => {
@@ -70,12 +71,17 @@ export default function CreateProjectPage() {
 
       // 2. Upload assets (could do Promise.all but sequential is safer for progress)
       await uploadProjectAsset(project.id, 'focus_video', files.focusVideo);
-      setUploadProgress(50);
+      setUploadProgress(40);
       
       await uploadProjectAsset(project.id, 'break_video', files.breakVideo);
-      setUploadProgress(80);
+      setUploadProgress(60);
       
       await uploadProjectAsset(project.id, 'audio', files.audio);
+      setUploadProgress(80);
+
+      if (files.breakAudio) {
+        await uploadProjectAsset(project.id, 'break_audio', files.breakAudio);
+      }
       setUploadProgress(100);
 
       // 3. Redirect
@@ -146,12 +152,22 @@ export default function CreateProjectPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Audio (MP3/WAV)</Label>
+              <Label>Main Audio (MP3/WAV)</Label>
+              <p className="text-xs text-muted-foreground">Used for focus sessions, and break sessions if no break audio is provided.</p>
               <Input 
                 type="file" 
                 accept="audio/*" 
                 onChange={e => setFiles({ ...files, audio: e.target.files[0] })} 
                 required 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Break Audio (MP3/WAV) - Optional</Label>
+              <p className="text-xs text-muted-foreground">Used exclusively for break sessions.</p>
+              <Input 
+                type="file" 
+                accept="audio/*" 
+                onChange={e => setFiles({ ...files, breakAudio: e.target.files[0] })} 
               />
             </div>
           </CardContent>
@@ -204,6 +220,7 @@ export default function CreateProjectPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="minimal">Minimal</SelectItem>
+                    <SelectItem value="cozy">Cozy</SelectItem>
                     <SelectItem value="large">Large</SelectItem>
                   </SelectContent>
                 </Select>
