@@ -6,6 +6,7 @@ import {
   startFinalRender,
   getRenderJob,
   duplicateProject,
+  deleteProject,
 } from "../lib/api";
 import {
   Card,
@@ -29,6 +30,7 @@ export default function ProjectDetailPage() {
   const [polling, setPolling] = useState(false);
   const [error, setError] = useState(null);
   const [duplicating, setDuplicating] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetchProject();
@@ -97,6 +99,18 @@ export default function ProjectDetailPage() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this project? Local files and project data will be deleted.")) return;
+    try {
+      setDeleting(true);
+      await deleteProject(id);
+      navigate("/");
+    } catch (err) {
+      setError(err.message);
+      setDeleting(false);
+    }
+  };
+
   if (loading) return <div className="p-8">Loading project...</div>;
   if (error && !project)
     return <div className="p-8 text-red-500">Error: {error}</div>;
@@ -121,14 +135,24 @@ export default function ProjectDetailPage() {
           >
             {project.status.toUpperCase()}
           </Badge>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleDuplicate}
-            disabled={duplicating}
-          >
-            {duplicating ? "Duplicating..." : "Duplicate Project"}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDuplicate}
+              disabled={duplicating || deleting}
+            >
+              {duplicating ? "Duplicating..." : "Duplicate"}
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleDelete}
+              disabled={deleting}
+            >
+              {deleting ? "Deleting..." : "Delete"}
+            </Button>
+          </div>
         </div>
       </div>
 

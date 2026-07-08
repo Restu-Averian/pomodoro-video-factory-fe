@@ -88,3 +88,11 @@ export async function duplicateProject(projectId) {
   if (!res.ok) throw new Error("Failed to duplicate project");
   return res.json();
 }
+
+export async function deleteProject(projectId) {
+  const res = await fetch(`${API_BASE}/projects/${projectId}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete project");
+  return res.json();
+}

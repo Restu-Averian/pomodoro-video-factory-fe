@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { checkBackendHealth, checkFfmpegHealth, getProjects } from "../lib/api";
+import { checkBackendHealth, checkFfmpegHealth, getProjects, deleteProject } from "../lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -19,26 +19,36 @@ export default function DashboardPage() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const [apiRes, ffmpegRes, projectsRes] = await Promise.all([
-          checkBackendHealth(),
-          checkFfmpegHealth(),
-          getProjects(),
-        ]);
-        console.log("ffmpegRes", ffmpegRes);
-        setHealth(apiRes);
-        setFfmpegHealth(ffmpegRes);
-        setProjects(projectsRes);
-      } catch (err) {
-        console.error("Error fetching dashboard data", err);
-      } finally {
-        setLoading(false);
-      }
+  const fetchData = async () => {
+    try {
+      const [apiRes, ffmpegRes, projectsRes] = await Promise.all([
+        checkBackendHealth(),
+        checkFfmpegHealth(),
+        getProjects(),
+      ]);
+      setHealth(apiRes);
+      setFfmpegHealth(ffmpegRes);
+      setProjects(projectsRes);
+    } catch (err) {
+      console.error("Error fetching dashboard data", err);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this project? Local files and project data will be deleted.")) return;
+    try {
+      await deleteProject(id);
+      fetchData(); // Refresh list after deletion
+    } catch (err) {
+      alert(`Failed to delete project: ${err.message}`);
+    }
+  };
 
   if (loading) return <div className="p-8">Loading dashboard...</div>;
 
@@ -160,9 +170,12 @@ export default function DashboardPage() {
                     <TableCell>
                       {new Date(p.created_at).toLocaleDateString()}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right space-x-2">
                       <Button variant="outline" size="sm" asChild>
                         <Link to={`/projects/${p.id}`}>View</Link>
+                      </Button>
+                      <Button variant="destructive" size="sm" onClick={() => handleDelete(p.id)}>
+                        Delete
                       </Button>
                     </TableCell>
                   </TableRow>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getProjects, duplicateProject } from '../lib/api';
+import { getProjects, duplicateProject, deleteProject } from '../lib/api';
 import { formatBytes } from '../lib/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,17 +11,18 @@ export default function OutputsPage() {
   const navigate = useNavigate();
   const [duplicating, setDuplicating] = useState(null);
 
-  useEffect(() => {
-    async function fetchOutputs() {
-      try {
-        const allProjects = await getProjects();
-        setProjects(allProjects.filter(p => p.status === 'completed' && p.output_path));
-      } catch (err) {
-        console.error("Failed to fetch outputs", err);
-      } finally {
-        setLoading(false);
-      }
+  const fetchOutputs = async () => {
+    try {
+      const allProjects = await getProjects();
+      setProjects(allProjects.filter(p => p.status === 'completed' && p.output_path));
+    } catch (err) {
+      console.error("Failed to fetch outputs", err);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
     fetchOutputs();
   }, []);
 
@@ -33,6 +34,16 @@ export default function OutputsPage() {
     } catch (err) {
       console.error(err);
       setDuplicating(null);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this project? Local files and project data will be deleted.")) return;
+    try {
+      await deleteProject(id);
+      fetchOutputs(); // Refresh list after deletion
+    } catch (err) {
+      alert(`Failed to delete project: ${err.message}`);
     }
   };
 
@@ -71,14 +82,23 @@ export default function OutputsPage() {
                     <Link to={`/projects/${p.id}`}>Details</Link>
                   </Button>
                 </div>
-                <Button 
-                  variant="secondary" 
-                  className="w-full" 
-                  onClick={() => handleDuplicate(p.id)}
-                  disabled={duplicating === p.id}
-                >
-                  {duplicating === p.id ? "Duplicating..." : "Duplicate Project"}
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="secondary" 
+                    className="flex-1" 
+                    onClick={() => handleDuplicate(p.id)}
+                    disabled={duplicating === p.id}
+                  >
+                    {duplicating === p.id ? "Duplicating..." : "Duplicate"}
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    className="flex-1"
+                    onClick={() => handleDelete(p.id)}
+                  >
+                    Delete
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))}
