@@ -1,10 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { LayoutDashboard, PlusCircle, Video } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, Video, Settings } from 'lucide-react';
 
 import DashboardPage from './pages/DashboardPage';
 import CreateProjectPage from './pages/CreateProjectPage';
 import ProjectDetailPage from './pages/ProjectDetailPage';
 import OutputsPage from './pages/OutputsPage';
+import SettingsPage from './pages/SettingsPage';
 
 function Layout({ children }) {
   return (
@@ -27,6 +28,10 @@ function Layout({ children }) {
             <Video className="w-4 h-4" />
             Outputs
           </Link>
+          <Link to="/settings" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent hover:text-accent-foreground text-sm font-medium">
+            <Settings className="w-4 h-4" />
+            Settings
+          </Link>
         </nav>
       </aside>
 
@@ -47,6 +52,7 @@ function App() {
           <Route path="/create" element={<CreateProjectPage />} />
           <Route path="/projects/:id" element={<ProjectDetailPage />} />
           <Route path="/outputs" element={<OutputsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </Layout>
     </Router>

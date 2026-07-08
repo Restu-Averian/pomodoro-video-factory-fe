@@ -1,11 +1,24 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getProject, startPreviewRender, startFinalRender, getRenderJob, duplicateProject } from '../lib/api';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  getProject,
+  startPreviewRender,
+  startFinalRender,
+  getRenderJob,
+  duplicateProject,
+} from "../lib/api";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import YoutubeUploadPanel from "../components/YoutubeUploadPanel";
 
 export default function ProjectDetailPage() {
   const { id } = useParams();
@@ -34,12 +47,12 @@ export default function ProjectDetailPage() {
 
   useEffect(() => {
     let interval;
-    if (polling && job && !['completed', 'failed'].includes(job.status)) {
+    if (polling && job && !["completed", "failed"].includes(job.status)) {
       interval = setInterval(async () => {
         try {
           const updatedJob = await getRenderJob(job.id);
           setJob(updatedJob);
-          if (['completed', 'failed'].includes(updatedJob.status)) {
+          if (["completed", "failed"].includes(updatedJob.status)) {
             setPolling(false);
             fetchProject(); // Refetch to get updated status and output path
           }
@@ -55,12 +68,17 @@ export default function ProjectDetailPage() {
     setError(null);
     try {
       let res;
-      if (type === 'preview') {
+      if (type === "preview") {
         res = await startPreviewRender(id);
       } else {
         res = await startFinalRender(id);
       }
-      setJob({ id: res.jobId, status: res.status, progress: 0, currentStep: 'Queued' });
+      setJob({
+        id: res.jobId,
+        status: res.status,
+        progress: 0,
+        currentStep: "Queued",
+      });
       setPolling(true);
       fetchProject(); // Updates project status to queued
     } catch (err) {
@@ -80,7 +98,8 @@ export default function ProjectDetailPage() {
   };
 
   if (loading) return <div className="p-8">Loading project...</div>;
-  if (error && !project) return <div className="p-8 text-red-500">Error: {error}</div>;
+  if (error && !project)
+    return <div className="p-8 text-red-500">Error: {error}</div>;
   if (!project) return <div className="p-8">Project not found.</div>;
 
   return (
@@ -91,10 +110,23 @@ export default function ProjectDetailPage() {
           <p className="text-muted-foreground mt-2">{project.description}</p>
         </div>
         <div className="flex flex-col items-end gap-2">
-          <Badge variant={project.status === 'completed' ? 'default' : project.status === 'failed' ? 'destructive' : 'secondary'}>
+          <Badge
+            variant={
+              project.status === "completed"
+                ? "default"
+                : project.status === "failed"
+                  ? "destructive"
+                  : "secondary"
+            }
+          >
             {project.status.toUpperCase()}
           </Badge>
-          <Button variant="outline" size="sm" onClick={handleDuplicate} disabled={duplicating}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDuplicate}
+            disabled={duplicating}
+          >
             {duplicating ? "Duplicating..." : "Duplicate Project"}
           </Button>
         </div>
@@ -114,11 +146,15 @@ export default function ProjectDetailPage() {
           <CardContent className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Focus Duration</span>
-              <span className="font-medium">{project.focus_duration_minutes}m</span>
+              <span className="font-medium">
+                {project.focus_duration_minutes}m
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Break Duration</span>
-              <span className="font-medium">{project.break_duration_minutes}m</span>
+              <span className="font-medium">
+                {project.break_duration_minutes}m
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Sessions</span>
@@ -126,7 +162,10 @@ export default function ProjectDetailPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Total Duration</span>
-              <span className="font-medium">{Math.floor(project.total_duration_seconds / 60)}m {project.total_duration_seconds % 60}s</span>
+              <span className="font-medium">
+                {Math.floor(project.total_duration_seconds / 60)}m{" "}
+                {project.total_duration_seconds % 60}s
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -139,10 +178,18 @@ export default function ProjectDetailPage() {
             {project.assets.length === 0 ? (
               <p className="text-muted-foreground">No assets uploaded.</p>
             ) : (
-              project.assets.map(a => (
-                <div key={a.id} className="flex justify-between border-b pb-2 last:border-0">
+              project.assets.map((a) => (
+                <div
+                  key={a.id}
+                  className="flex justify-between border-b pb-2 last:border-0"
+                >
                   <span className="text-muted-foreground">{a.type}</span>
-                  <span className="font-medium truncate max-w-[200px]" title={a.original_name}>{a.original_name}</span>
+                  <span
+                    className="font-medium truncate max-w-[200px]"
+                    title={a.original_name}
+                  >
+                    {a.original_name}
+                  </span>
                 </div>
               ))
             )}
@@ -157,36 +204,52 @@ export default function ProjectDetailPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex gap-4">
-            <Button 
-              variant="outline" 
-              onClick={() => handleStartRender('preview')}
-              disabled={polling || ['queued', 'rendering'].includes(project.status)}
+            <Button
+              variant="outline"
+              onClick={() => handleStartRender("preview")}
+              disabled={
+                polling || ["queued", "rendering"].includes(project.status)
+              }
             >
               Generate Preview
             </Button>
-            <Button 
-              onClick={() => handleStartRender('final')}
-              disabled={polling || ['queued', 'rendering'].includes(project.status)}
+            <Button
+              onClick={() => handleStartRender("final")}
+              disabled={
+                polling || ["queued", "rendering"].includes(project.status)
+              }
             >
               Start Final Render
             </Button>
           </div>
 
-          {(job || polling || ['queued', 'rendering'].includes(project.status)) && (
+          {(job ||
+            polling ||
+            ["queued", "rendering"].includes(project.status)) && (
             <div className="bg-secondary p-4 rounded-lg space-y-3">
               <div className="flex justify-between text-sm font-medium">
-                <span>{job?.currentStep || 'Initializing...'}</span>
+                <span>{job?.currentStep || "Initializing..."}</span>
                 <span>{Math.round(job?.progress || 0)}%</span>
               </div>
               <Progress value={job?.progress || 0} />
-              
+
               <div className="flex justify-between text-xs text-muted-foreground mt-2">
-                {job?.startedAt && <span>Started: {new Date(job.startedAt).toLocaleTimeString()}</span>}
-                {job?.completedAt && <span>Completed: {new Date(job.completedAt).toLocaleTimeString()}</span>}
+                {job?.startedAt && (
+                  <span>
+                    Started: {new Date(job.startedAt).toLocaleTimeString()}
+                  </span>
+                )}
+                {job?.completedAt && (
+                  <span>
+                    Completed: {new Date(job.completedAt).toLocaleTimeString()}
+                  </span>
+                )}
               </div>
 
               {job?.errorMessage && (
-                <p className="text-red-500 text-sm mt-2 font-medium">Error: {job.errorMessage}</p>
+                <p className="text-red-500 text-sm mt-2 font-medium">
+                  Error: {job.errorMessage}
+                </p>
               )}
             </div>
           )}
@@ -194,19 +257,26 @@ export default function ProjectDetailPage() {
           {project.preview_path && (
             <div className="mt-4 space-y-2">
               <h3 className="font-medium">Preview Video</h3>
-              <video 
-                src={`http://localhost:4000${project.preview_path}`} 
-                controls 
-                className="w-full max-w-lg rounded-md border" 
+              <video
+                src={`http://localhost:4000${project.preview_path}`}
+                controls
+                className="w-full max-w-lg rounded-md border"
               />
             </div>
           )}
 
-          {project.status === 'completed' && project.output_path && (
+          {project.status === "completed" && project.output_path && (
             <div className="mt-4 p-4 border border-green-200 bg-green-50 dark:bg-green-950/20 rounded-lg">
-              <h3 className="font-medium text-green-800 dark:text-green-400 mb-2">Render Complete!</h3>
+              <h3 className="font-medium text-green-800 dark:text-green-400 mb-2">
+                Render Complete!
+              </h3>
               <Button asChild>
-                <a href={`http://localhost:4000${project.output_path}`} target="_blank" rel="noreferrer" download>
+                <a
+                  href={`http://localhost:4000${project.output_path}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  download
+                >
                   Download Video
                 </a>
               </Button>
@@ -214,6 +284,10 @@ export default function ProjectDetailPage() {
           )}
         </CardContent>
       </Card>
+
+      {project.status === "completed" && project.output_path && (
+        <YoutubeUploadPanel project={project} />
+      )}
     </div>
   );
 }
