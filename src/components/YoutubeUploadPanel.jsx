@@ -20,25 +20,38 @@ import {
 } from "./ui/select";
 import { Switch } from "./ui/switch";
 import { API_BASE_URL } from "../lib/utils";
-import { Video, ExternalLink } from "lucide-react";
+import { generateYouTubeMetadata, checkOllamaHealth } from "../lib/api";
+import { Video, ExternalLink, Sparkles, AlertCircle } from "lucide-react";
 
 export default function YoutubeUploadPanel({ project }) {
   const [jobs, setJobs] = useState([]);
   const [polling, setPolling] = useState(false);
   const [formData, setFormData] = useState({
-    title: project.title,
-    description: project.description || "",
+    title: project.youtube_title_draft || project.title || "",
+    description: project.youtube_description_draft || project.description || "",
     tags: "pomodoro, focus, study with me",
     privacyStatus: "private",
     scheduledAt: "",
     madeForKids: false,
     containsSyntheticMedia: true,
   });
+  const [showMetadataModal, setShowMetadataModal] = useState(false);
+  const [metadataTheme, setMetadataTheme] = useState(
+    project.youtube_metadata_theme || "",
+  );
+  const [metadataLoading, setMetadataLoading] = useState(false);
+  const [metadataError, setMetadataError] = useState(null);
+  const [metadataWarning, setMetadataWarning] = useState(null);
+  const [replaceWarning, setReplaceWarning] = useState(false);
+  const [aiStatus, setAiStatus] = useState("checking");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchJobs();
+    checkOllamaHealth().then((res) => {
+      setAiStatus(res.reachable ? "ready" : "unavailable");
+    });
   }, [project.id]);
 
   useEffect(() => {
@@ -66,6 +79,46 @@ export default function YoutubeUploadPanel({ project }) {
       }
     } catch (err) {
       console.error("Failed to fetch jobs", err);
+    }
+  };
+
+  const handleGenerateClick = () => {
+    setMetadataError(null);
+    setMetadataWarning(null);
+    setReplaceWarning(false);
+    setShowMetadataModal(true);
+  };
+
+  const submitGenerate = async (forceReplace = false) => {
+    if (!forceReplace && (formData.title || formData.description)) {
+      setReplaceWarning(true);
+      return;
+    }
+
+    setMetadataLoading(true);
+    setMetadataError(null);
+    setMetadataWarning(null);
+    try {
+      const result = await generateYouTubeMetadata(project.id, {
+        theme: metadataTheme,
+      });
+      setFormData((prev) => ({
+        ...prev,
+        title: result.title,
+        description: result.description,
+      }));
+      if (result.source === "fallback") {
+        setMetadataWarning(
+          result.warning?.message ||
+            "Local AI was unavailable, so a deterministic fallback description was generated.",
+        );
+      }
+      setShowMetadataModal(false);
+      setReplaceWarning(false);
+    } catch (err) {
+      setMetadataError(err.message);
+    } finally {
+      setMetadataLoading(false);
     }
   };
 
@@ -158,7 +211,39 @@ export default function YoutubeUploadPanel({ project }) {
             currentJob.status,
           )) && (
           <div className="space-y-4">
-            <div className="grid gap-2">
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                  YouTube Metadata
+                </h3>
+                <span className="text-xs text-muted-foreground">
+                  {aiStatus === "ready"
+                    ? "Local AI ready"
+                    : aiStatus === "unavailable"
+                      ? "Local AI unavailable"
+                      : "Checking AI..."}
+                </span>
+              </div>
+
+              {metadataWarning && (
+                <div className="p-3 bg-blue-50 dark:bg-blue-950/50 text-blue-900 dark:text-blue-200 rounded-md text-sm flex gap-2">
+                  <AlertCircle className="w-5 h-5 shrink-0" />
+                  <p>{metadataWarning}</p>
+                </div>
+              )}
+
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleGenerateClick}
+                className="w-full sm:w-auto self-start flex items-center gap-2"
+              >
+                <Sparkles className="w-4 h-4" />
+                Generate Title & Description
+              </Button>
+            </div>
+
+            <div className="grid gap-2 mt-2">
               <Label htmlFor="yt-title">Video Title</Label>
               <Input
                 id="yt-title"
@@ -241,6 +326,77 @@ export default function YoutubeUploadPanel({ project }) {
           </div>
         )}
       </CardContent>
+
+      {showMetadataModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <Card className="w-full max-w-md shadow-lg border-muted">
+            <CardHeader>
+              <CardTitle>Generate YouTube Title & Description</CardTitle>
+              <CardDescription>
+                The title format, duration, Pomodoro format, timestamps, and
+                session data will be generated from this completed project.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {replaceWarning ? (
+                <div className="p-3 bg-amber-50 dark:bg-amber-950/50 text-amber-900 dark:text-amber-200 rounded-md text-sm flex gap-2">
+                  <AlertCircle className="w-5 h-5 shrink-0" />
+                  <p>
+                    Generating new metadata will replace the current title and
+                    description.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div className="grid gap-2">
+                    <Label htmlFor="meta-theme">Theme</Label>
+                    <Input
+                      id="meta-theme"
+                      value={metadataTheme}
+                      onChange={(e) => setMetadataTheme(e.target.value)}
+                      placeholder="Rainy Window Study"
+                      maxLength={80}
+                    />
+                  </div>
+                  {metadataError && (
+                    <p className="text-sm text-red-500">{metadataError}</p>
+                  )}
+                </>
+              )}
+            </CardContent>
+            <CardFooter className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowMetadataModal(false);
+                  setReplaceWarning(false);
+                }}
+                disabled={metadataLoading}
+              >
+                Cancel
+              </Button>
+              {replaceWarning ? (
+                <Button
+                  variant="default"
+                  onClick={() => submitGenerate(true)}
+                  disabled={metadataLoading}
+                >
+                  {metadataLoading ? "Generating..." : "Replace & Generate"}
+                </Button>
+              ) : (
+                <Button
+                  variant="default"
+                  onClick={() => submitGenerate(false)}
+                  disabled={metadataLoading || !metadataTheme.trim()}
+                >
+                  {metadataLoading ? "Generating..." : "Generate"}
+                </Button>
+              )}
+            </CardFooter>
+          </Card>
+        </div>
+      )}
+
       {(!currentJob ||
         ["failed", "completed", "scheduled", "uploaded"].includes(
           currentJob.status,

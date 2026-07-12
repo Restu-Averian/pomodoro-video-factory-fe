@@ -142,3 +142,37 @@ export async function deleteProjectAsset(projectId, assetId) {
     throw new Error(await errorMessage(res, "Failed to delete asset"));
   return res.json();
 }
+
+export async function checkOllamaHealth() {
+  try {
+    const res = await fetch(`${API_BASE}/ai/ollama/health`);
+    if (!res.ok) throw new Error("Ollama health check failed");
+    return await res.json();
+  } catch (error) {
+    return {
+      reachable: false,
+      modelInstalled: false,
+      error: error.message,
+    };
+  }
+}
+
+export async function generateYouTubeMetadata(projectId, payload) {
+  const res = await fetch(
+    `${API_BASE}/projects/${projectId}/youtube/metadata/generate`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    },
+  );
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    const err = new Error(
+      body?.error?.message || "Failed to generate metadata",
+    );
+    err.code = body?.error?.code;
+    throw err;
+  }
+  return res.json();
+}
