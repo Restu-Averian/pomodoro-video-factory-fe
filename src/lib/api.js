@@ -1,5 +1,10 @@
 const API_BASE = "http://localhost:4000/api";
 
+async function errorMessage(res, fallback) {
+  const body = await res.json().catch(() => null);
+  return body?.error?.message || fallback;
+}
+
 export async function checkBackendHealth() {
   try {
     const res = await fetch(`${API_BASE}/health`);
@@ -36,13 +41,25 @@ export async function createProject(payload) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error("Failed to create project");
+  if (!res.ok)
+    throw new Error(await errorMessage(res, "Failed to create project"));
   return res.json();
 }
 
 export async function getProject(id) {
   const res = await fetch(`${API_BASE}/projects/${id}`);
   if (!res.ok) throw new Error("Failed to fetch project");
+  return res.json();
+}
+
+export async function updateProject(id, payload) {
+  const res = await fetch(`${API_BASE}/projects/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok)
+    throw new Error(await errorMessage(res, "Failed to update project"));
   return res.json();
 }
 
@@ -55,7 +72,8 @@ export async function uploadProjectAsset(projectId, type, file) {
     method: "POST",
     body: formData,
   });
-  if (!res.ok) throw new Error(`Failed to upload ${type}`);
+  if (!res.ok)
+    throw new Error(await errorMessage(res, `Failed to upload ${type}`));
   return res.json();
 }
 
@@ -94,5 +112,33 @@ export async function deleteProject(projectId) {
     method: "DELETE",
   });
   if (!res.ok) throw new Error("Failed to delete project");
+  return res.json();
+}
+
+export async function getSessionAudio(projectId) {
+  const res = await fetch(`${API_BASE}/projects/${projectId}/session-audio`);
+  if (!res.ok)
+    throw new Error(await errorMessage(res, "Failed to load session audio"));
+  return res.json();
+}
+
+export async function saveSessionAudio(projectId, payload) {
+  const res = await fetch(`${API_BASE}/projects/${projectId}/session-audio`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok)
+    throw new Error(await errorMessage(res, "Failed to save session audio"));
+  return res.json();
+}
+
+export async function deleteProjectAsset(projectId, assetId) {
+  const res = await fetch(
+    `${API_BASE}/projects/${projectId}/assets/${assetId}`,
+    { method: "DELETE" },
+  );
+  if (!res.ok)
+    throw new Error(await errorMessage(res, "Failed to delete asset"));
   return res.json();
 }

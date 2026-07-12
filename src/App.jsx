@@ -1,11 +1,16 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { LayoutDashboard, PlusCircle, Video, Settings } from 'lucide-react';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  NavLink,
+} from "react-router-dom";
+import { LayoutDashboard, PlusCircle, Video, Settings } from "lucide-react";
 
-import DashboardPage from './pages/DashboardPage';
-import CreateProjectPage from './pages/CreateProjectPage';
-import ProjectDetailPage from './pages/ProjectDetailPage';
-import OutputsPage from './pages/OutputsPage';
-import SettingsPage from './pages/SettingsPage';
+import DashboardPage from "./pages/DashboardPage";
+import CreateProjectPage from "./pages/CreateProjectPage";
+import ProjectDetailPage from "./pages/ProjectDetailPage";
+import OutputsPage from "./pages/OutputsPage";
+import SettingsPage from "./pages/SettingsPage";
 
 function Layout({ children }) {
   return (
@@ -16,29 +21,48 @@ function Layout({ children }) {
           <h1 className="text-xl font-bold tracking-tight">Pomodoro Factory</h1>
         </div>
         <nav className="flex-1 px-4 space-y-2">
-          <Link to="/" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent hover:text-accent-foreground text-sm font-medium">
+          <NavLink
+            to="/"
+            end
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground text-sm font-medium ${isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground"}`
+            }
+          >
             <LayoutDashboard className="w-4 h-4" />
             Dashboard
-          </Link>
-          <Link to="/create" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent hover:text-accent-foreground text-sm font-medium">
+          </NavLink>
+          <NavLink
+            to="/create"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground text-sm font-medium ${isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground"}`
+            }
+          >
             <PlusCircle className="w-4 h-4" />
             Create Project
-          </Link>
-          <Link to="/outputs" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent hover:text-accent-foreground text-sm font-medium">
+          </NavLink>
+          <NavLink
+            to="/outputs"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground text-sm font-medium ${isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground"}`
+            }
+          >
             <Video className="w-4 h-4" />
             Outputs
-          </Link>
-          <Link to="/settings" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent hover:text-accent-foreground text-sm font-medium">
+          </NavLink>
+          <NavLink
+            to="/settings"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground text-sm font-medium ${isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground"}`
+            }
+          >
             <Settings className="w-4 h-4" />
             Settings
-          </Link>
+          </NavLink>
         </nav>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
-        {children}
-      </main>
+      <main className="flex-1 overflow-y-auto">{children}</main>
     </div>
   );
 }
