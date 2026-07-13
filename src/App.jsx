@@ -4,7 +4,13 @@ import {
   Route,
   NavLink,
 } from "react-router-dom";
-import { LayoutDashboard, PlusCircle, Video, Settings } from "lucide-react";
+import {
+  LayoutDashboard,
+  PlusCircle,
+  Video,
+  Settings,
+  Crop,
+} from "lucide-react";
 import { ThemeControl } from "./components/ThemeControl";
 
 import DashboardPage from "./pages/DashboardPage";
@@ -12,6 +18,7 @@ import CreateProjectPage from "./pages/CreateProjectPage";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
 import OutputsPage from "./pages/OutputsPage";
 import SettingsPage from "./pages/SettingsPage";
+import VideoReformatterPage from "./pages/VideoReformatterPage";
 
 function Layout({ children }) {
   return (
@@ -51,6 +58,15 @@ function Layout({ children }) {
             Outputs
           </NavLink>
           <NavLink
+            to="/reformatter"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground text-sm font-medium ${isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground"}`
+            }
+          >
+            <Crop className="w-4 h-4" />
+            Video Reformatter
+          </NavLink>
+          <NavLink
             to="/settings"
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground text-sm font-medium ${isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground"}`
@@ -82,6 +98,7 @@ function App() {
           <Route path="/create" element={<CreateProjectPage />} />
           <Route path="/projects/:id" element={<ProjectDetailPage />} />
           <Route path="/outputs" element={<OutputsPage />} />
+          <Route path="/reformatter" element={<VideoReformatterPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </Layout>
