@@ -99,6 +99,16 @@ export async function getRenderJob(jobId) {
   return res.json();
 }
 
+export async function getRemoteWorkerStatus() {
+  try {
+    const res = await fetch(`${API_BASE}/render-worker/status`);
+    if (!res.ok) throw new Error("Remote worker status check failed");
+    return await res.json();
+  } catch (error) {
+    return { online: false, ready: false, error: error.message };
+  }
+}
+
 export async function duplicateProject(projectId) {
   const res = await fetch(`${API_BASE}/projects/${projectId}/duplicate`, {
     method: "POST",

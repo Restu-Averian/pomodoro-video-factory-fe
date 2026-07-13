@@ -5,6 +5,7 @@ import {
   startPreviewRender,
   startFinalRender,
   getRenderJob,
+  getRemoteWorkerStatus,
   duplicateProject,
   deleteProject,
   getSessionAudio,
@@ -95,6 +96,7 @@ export default function ProjectDetailPage() {
   const [savingConfig, setSavingConfig] = useState(false);
   const [config, setConfig] = useState(null);
   const [mappingSaved, setMappingSaved] = useState(false);
+  const [remoteWorker, setRemoteWorker] = useState(null);
 
   const showError = (message) => {
     setError(message);
@@ -116,6 +118,10 @@ export default function ProjectDetailPage() {
   useEffect(() => {
     fetchProject();
   }, [id]);
+
+  useEffect(() => {
+    getRemoteWorkerStatus().then(setRemoteWorker);
+  }, []);
 
   useEffect(() => {
     if (!errorKey) return;
@@ -709,6 +715,20 @@ export default function ProjectDetailPage() {
           <CardDescription>Generate your final output video</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          {remoteWorker && (
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-muted-foreground">Remote Worker:</span>
+              <Badge variant={remoteWorker.online && remoteWorker.ready ? "secondary" : "outline"}>
+                {!remoteWorker.online
+                  ? "Worker Offline"
+                  : !remoteWorker.ffmpegAvailable || !remoteWorker.ffprobeAvailable
+                    ? "FFmpeg unavailable"
+                    : remoteWorker.activeJobId
+                      ? "Worker Busy"
+                      : "Worker Online · Worker Ready"}
+              </Badge>
+            </div>
+          )}
           <div className="flex gap-4">
             <Button
               variant="outline"
