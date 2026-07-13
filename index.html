@@ -5,6 +5,17 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>fe</title>
+    <script>
+      (() => {
+        try {
+          const key = "pomodoro-video-factory-theme";
+          const saved = localStorage.getItem(key);
+          const theme = ["light", "dark", "system"].includes(saved) ? saved : "system";
+          const dark = theme === "dark" || (theme === "system" && window.matchMedia?.("(prefers-color-scheme: dark)").matches);
+          document.documentElement.classList.toggle("dark", dark);
+        } catch {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

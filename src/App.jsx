@@ -5,6 +5,7 @@ import {
   NavLink,
 } from "react-router-dom";
 import { LayoutDashboard, PlusCircle, Video, Settings } from "lucide-react";
+import { ThemeControl } from "./components/ThemeControl";
 
 import DashboardPage from "./pages/DashboardPage";
 import CreateProjectPage from "./pages/CreateProjectPage";
@@ -14,7 +15,7 @@ import SettingsPage from "./pages/SettingsPage";
 
 function Layout({ children }) {
   return (
-    <div className="flex h-screen bg-background dark:bg-neutral-950">
+    <div className="flex h-screen bg-background">
       {/* Sidebar */}
       <aside className="w-64 border-r bg-card flex flex-col">
         <div className="p-6">
@@ -62,7 +63,12 @@ function Layout({ children }) {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">{children}</main>
+      <main className="flex min-w-0 flex-1 flex-col overflow-y-auto">
+        <header className="flex h-16 shrink-0 items-center justify-end border-b bg-card px-4">
+          <ThemeControl />
+        </header>
+        <div className="min-w-0">{children}</div>
+      </main>
     </div>
   );
 }

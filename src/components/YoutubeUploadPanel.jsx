@@ -195,7 +195,7 @@ export default function YoutubeUploadPanel({ project }) {
               )}
             </div>
             {currentJob.error_message && (
-              <p className="text-red-500 mt-1">{currentJob.error_message}</p>
+              <p className="mt-1 text-red-600 dark:text-red-300">{currentJob.error_message}</p>
             )}
             {currentJob.scheduled_at && currentJob.status === "scheduled" && (
               <p className="text-muted-foreground mt-1">
@@ -359,7 +359,7 @@ export default function YoutubeUploadPanel({ project }) {
                     />
                   </div>
                   {metadataError && (
-                    <p className="text-sm text-red-500">{metadataError}</p>
+                    <p className="text-sm text-red-600 dark:text-red-300">{metadataError}</p>
                   )}
                 </>
               )}
@@ -402,7 +402,7 @@ export default function YoutubeUploadPanel({ project }) {
           currentJob.status,
         )) && (
         <CardFooter className="flex-col items-start gap-2">
-          {error && <p className="text-sm text-red-500 font-medium">{error}</p>}
+          {error && <p className="text-sm font-medium text-red-600 dark:text-red-300">{error}</p>}
           <Button
             onClick={handleUpload}
             disabled={loading || !formData.title}

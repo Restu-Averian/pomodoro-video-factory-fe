@@ -288,7 +288,7 @@ export default function ProjectDetailPage() {
 
   if (loading) return <div className="p-8">Loading project...</div>;
   if (error && !project)
-    return <div className="p-8 text-red-500">Error: {error}</div>;
+    return <div className="p-8 text-red-600 dark:text-red-300">Error: {error}</div>;
   if (!project) return <div className="p-8">Project not found.</div>;
 
   return (
@@ -686,7 +686,7 @@ export default function ProjectDetailPage() {
                       Boolean(project.include_final_break)) &&
                       !row.breakAudioAssetId),
                 ) && (
-                  <p className="text-sm text-amber-700">
+                  <p className="text-sm text-amber-700 dark:text-amber-300">
                     Missing selections are saved as warnings; mapped renders
                     will fail with the affected session name until completed.
                   </p>
@@ -753,7 +753,7 @@ export default function ProjectDetailPage() {
               </div>
 
               {job?.errorMessage && (
-                <p className="text-red-500 text-sm mt-2 font-medium">
+                <p className="text-red-600 dark:text-red-300 text-sm mt-2 font-medium">
                   Error: {job.errorMessage}
                 </p>
               )}
@@ -772,8 +772,8 @@ export default function ProjectDetailPage() {
           )}
 
           {project.status === "completed" && project.output_path && (
-            <div className="mt-4 p-4 border border-green-200 bg-green-50 dark:bg-green-950/20 rounded-lg">
-              <h3 className="font-medium text-green-800 dark:text-green-400 mb-2">
+            <div className="mt-4 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-900/60 dark:bg-green-950/30">
+              <h3 className="mb-2 font-medium text-green-800 dark:text-green-300">
                 Render Complete!
               </h3>
               <Button asChild>
