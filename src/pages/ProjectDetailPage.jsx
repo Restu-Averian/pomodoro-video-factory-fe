@@ -139,6 +139,7 @@ export default function ProjectDetailPage() {
       setSessionRows(rowsForCount(mapping.sessionCount, mapping.sessions));
       setBellAssetId(mapping.bellAssetId || "");
     } catch (err) {
+      console.error("Failed to fetch project:", err);
       showError(err.message);
     } finally {
       setLoading(false);
