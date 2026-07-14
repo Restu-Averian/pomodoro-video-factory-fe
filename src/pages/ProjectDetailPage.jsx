@@ -294,7 +294,9 @@ export default function ProjectDetailPage() {
 
   if (loading) return <div className="p-8">Loading project...</div>;
   if (error && !project)
-    return <div className="p-8 text-red-600 dark:text-red-300">Error: {error}</div>;
+    return (
+      <div className="p-8 text-red-600 dark:text-red-300">Error: {error}</div>
+    );
   if (!project) return <div className="p-8">Project not found.</div>;
 
   return (
@@ -489,7 +491,7 @@ export default function ProjectDetailPage() {
                 >
                   <span className="text-muted-foreground">{a.type}</span>
                   <span
-                    className="font-medium truncate max-w-[200px]"
+                    className="font-medium truncate max-w-50"
                     title={a.original_name}
                   >
                     {a.original_name}
@@ -718,10 +720,17 @@ export default function ProjectDetailPage() {
           {remoteWorker && (
             <div className="flex items-center gap-2 text-sm">
               <span className="text-muted-foreground">Remote Worker:</span>
-              <Badge variant={remoteWorker.online && remoteWorker.ready ? "secondary" : "outline"}>
+              <Badge
+                variant={
+                  remoteWorker.online && remoteWorker.ready
+                    ? "secondary"
+                    : "outline"
+                }
+              >
                 {!remoteWorker.online
                   ? "Worker Offline"
-                  : !remoteWorker.ffmpegAvailable || !remoteWorker.ffprobeAvailable
+                  : !remoteWorker.ffmpegAvailable ||
+                      !remoteWorker.ffprobeAvailable
                     ? "FFmpeg unavailable"
                     : remoteWorker.activeJobId
                       ? "Worker Busy"
