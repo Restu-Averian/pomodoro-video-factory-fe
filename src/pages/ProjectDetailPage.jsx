@@ -177,7 +177,7 @@ export default function ProjectDetailPage() {
         id: res.jobId,
         status: res.status,
         progress: 0,
-        currentStep: "Queued",
+        currentStep: res.currentStep || "Queued",
       });
       setPolling(true);
       fetchProject(); // Updates project status to queued
