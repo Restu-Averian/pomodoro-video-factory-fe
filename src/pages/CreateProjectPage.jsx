@@ -1,6 +1,18 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
+  PlusCircle,
+  User,
+  ChevronDown,
+  FileText,
+  Folder,
+  Timer,
+  Hourglass,
+  AudioLines,
+  CloudUpload,
+  Play,
+} from "lucide-react";
+import {
   createProject,
   saveSessionAudio,
   uploadProjectAsset,
@@ -221,317 +233,399 @@ export default function CreateProjectPage() {
   };
 
   return (
-    <div className="p-8 max-w-4xl mx-auto space-y-6">
-      <h1 className="text-3xl font-bold tracking-tight">Create Project</h1>
+    <div className="flex-1 flex flex-col min-h-0 text-foreground">
+      {/* Top Header */}
+      <header className="flex h-[60px] shrink-0 items-center justify-between border-b border-border/10 px-8">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+          <PlusCircle className="w-4 h-4 text-orange-400" />
+          <span>Create Project</span>
+        </div>
+        <button className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/20 bg-[#241e1a] hover:bg-white/5 transition-colors">
+          <User className="w-4 h-4 text-muted-foreground" />
+          <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+        </button>
+      </header>
 
-      {error && (
-        <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+      <div className="p-8 space-y-8 max-w-[1000px] w-full mx-auto overflow-y-auto pb-20">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+          Create Project
+        </h1>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Project Info</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Title</Label>
-              <Input
-                value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
-                placeholder="e.g. Rainy Coding Room"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Textarea
-                value={form.description}
-                onChange={(e) =>
-                  setForm({ ...form, description: e.target.value })
-                }
-                placeholder="Optional description"
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Assets</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Focus Video (MP4)</Label>
-              <Input
-                type="file"
-                accept="video/*"
-                onChange={(e) =>
-                  setFiles({ ...files, focusVideo: e.target.files[0] })
-                }
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Break Video (MP4)</Label>
-              <Input
-                type="file"
-                accept="video/*"
-                onChange={(e) =>
-                  setFiles({ ...files, breakVideo: e.target.files[0] })
-                }
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Session Bell — Optional</Label>
-              <p className="text-xs text-muted-foreground">
-                Played at the beginning of every Focus and Break segment.
-              </p>
-              <Input
-                type="file"
-                accept="audio/mpeg,audio/wav,audio/mp4,audio/x-m4a"
-                onChange={(e) =>
-                  setFiles({ ...files, sessionBell: e.target.files[0] || null })
-                }
-              />
-            </div>
-            <details className="rounded-lg border p-3">
-              <summary className="cursor-pointer text-sm font-medium">
-                Legacy Audio Fallback
-              </summary>
-              <p className="mt-2 text-xs text-muted-foreground">
-                Only for legacy fallback projects. New projects should use the
-                project audio library and session mapping.
-              </p>
-              <div className="mt-3 grid gap-3 md:grid-cols-2">
-                <label className="space-y-1 text-sm">
-                  Legacy Focus Audio
-                  <Input
-                    type="file"
-                    accept="audio/*"
-                    onChange={(e) =>
-                      setFiles({ ...files, audio: e.target.files[0] })
-                    }
-                  />
-                </label>
-                <label className="space-y-1 text-sm">
-                  Legacy Break Audio
-                  <Input
-                    type="file"
-                    accept="audio/*"
-                    onChange={(e) =>
-                      setFiles({ ...files, breakAudio: e.target.files[0] })
-                    }
-                  />
-                </label>
-              </div>
-            </details>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Pomodoro Config</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Pomodoro Format</Label>
-              <Select value={form.pomodoroPreset} onValueChange={setPreset}>
-                <SelectTrigger className="w-full">
-                  <SelectValue>
-                    {(value) => POMODORO_PRESET_LABELS[value] || "Custom"}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="classic_25_5">
-                    25/5 Classic Pomodoro
-                  </SelectItem>
-                  <SelectItem value="deep_work_50_10">
-                    50/10 Deep Work Pomodoro
-                  </SelectItem>
-                  <SelectItem value="custom">Custom</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">
-                Focus: {form.focusDurationMinutes} min · Break:{" "}
-                {form.breakDurationMinutes} min · Sessions: {form.sessionCount}{" "}
-                · Final break:{" "}
-                {form.includeFinalBreak ? "Included" : "Excluded"}
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Focus Duration (minutes)</Label>
-                <Input
-                  type="number"
-                  min="1"
-                  value={form.focusDurationMinutes}
-                  onChange={(e) =>
-                    updateControlledValue(
-                      "focusDurationMinutes",
-                      parseInt(e.target.value),
-                    )
-                  }
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Break Duration (minutes)</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  value={form.breakDurationMinutes}
-                  onChange={(e) =>
-                    updateControlledValue(
-                      "breakDurationMinutes",
-                      parseInt(e.target.value),
-                    )
-                  }
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Session Count</Label>
-                <Input
-                  type="number"
-                  min="1"
-                  value={form.sessionCount}
-                  onChange={(e) =>
-                    updateControlledValue(
-                      "sessionCount",
-                      parseInt(e.target.value),
-                    )
-                  }
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Timer Text Color</Label>
-                <div className="flex gap-2">
-                  <Input
-                    type="color"
-                    className="w-12 p-1 cursor-pointer"
-                    value={form.timerTextColor}
-                    onChange={(e) =>
-                      setForm({ ...form, timerTextColor: e.target.value })
-                    }
-                  />
-                  <Input
-                    type="text"
-                    value={form.timerTextColor}
-                    onChange={(e) =>
-                      setForm({ ...form, timerTextColor: e.target.value })
-                    }
-                    placeholder="#ffffff"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-2 pt-2">
-              <Switch
-                checked={form.includeFinalBreak}
-                onCheckedChange={(v) =>
-                  updateControlledValue("includeFinalBreak", v)
-                }
-              />
-              <Label>Include Final Break</Label>
-            </div>
-
-            <div className="mt-4 p-4 bg-secondary rounded-lg">
-              <p className="font-semibold text-lg text-secondary-foreground">
-                Estimated duration: {estimatedDuration}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {loading && (
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>Creating & Uploading...</span>
-              <span>{uploadProgress}%</span>
-            </div>
-            <Progress value={uploadProgress} />
-          </div>
+        {error && (
+          <Alert
+            variant="destructive"
+            className="bg-red-950/20 border-red-900/30 text-red-400"
+          >
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         )}
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Session Audio Mapping</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Each selected file is uploaded once for this segment and saved as
-              an audio asset ID.
-            </p>
-            {sessionMappings.map((row) => {
-              const needsBreak =
-                row.sessionIndex < form.sessionCount || form.includeFinalBreak;
-              return (
-                <div
-                  key={row.sessionIndex}
-                  className="grid gap-3 rounded-lg border p-3 md:grid-cols-2"
-                >
-                  <p className="font-medium md:col-span-2">
-                    Session {row.sessionIndex}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <Card className="rounded-2xl bg-[#241e1a] border-border/10 shadow-none overflow-hidden">
+            <div className="p-6 border-b border-border/5 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-orange-400" />
+              <h2 className="text-base font-semibold text-foreground">
+                Project Info
+              </h2>
+            </div>
+            <CardContent className="p-6 space-y-5">
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">Title</Label>
+                <Input
+                  className="bg-[#1a1715] border-border/20 h-11 text-foreground"
+                  value={form.title}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  placeholder="e.g. Rainy Coding Room"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">Description</Label>
+                <Textarea
+                  className="bg-[#1a1715] border-border/20 min-h-[100px] text-foreground resize-none"
+                  value={form.description}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
+                  }
+                  placeholder="Optional description"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-2xl bg-[#241e1a] border-border/10 shadow-none overflow-hidden">
+            <div className="p-6 border-b border-border/5 flex items-center gap-2">
+              <Folder className="w-5 h-5 text-orange-400" />
+              <h2 className="text-base font-semibold text-foreground">
+                Assets
+              </h2>
+            </div>
+            <CardContent className="p-6 space-y-6">
+              <div className="space-y-2">
+                <Label className="text-foreground">Focus Video (MP4)</Label>
+                <Input
+                  type="file"
+                  accept="video/*"
+                  className="bg-[#1a1715] border-border/20 h-11 text-muted-foreground file:bg-[#27211d] file:text-foreground file:border-0 file:border-r file:border-border/20 file:mr-4 file:px-4 file:h-full file:font-medium hover:file:bg-white/10 file:transition-colors file:cursor-pointer overflow-hidden p-0"
+                  onChange={(e) =>
+                    setFiles({ ...files, focusVideo: e.target.files[0] })
+                  }
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-foreground">Break Video (MP4)</Label>
+                <Input
+                  type="file"
+                  accept="video/*"
+                  className="bg-[#1a1715] border-border/20 h-11 text-muted-foreground file:bg-[#27211d] file:text-foreground file:border-0 file:border-r file:border-border/20 file:mr-4 file:px-4 file:h-full file:font-medium hover:file:bg-white/10 file:transition-colors file:cursor-pointer overflow-hidden p-0"
+                  onChange={(e) =>
+                    setFiles({ ...files, breakVideo: e.target.files[0] })
+                  }
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-foreground">
+                  Session Bell — Optional
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Played at the beginning of every Focus and Break segment.
+                </p>
+                <Input
+                  type="file"
+                  accept="audio/mpeg,audio/wav,audio/mp4,audio/x-m4a"
+                  className="bg-[#1a1715] border-border/20 h-11 text-muted-foreground file:bg-[#27211d] file:text-foreground file:border-0 file:border-r file:border-border/20 file:mr-4 file:px-4 file:h-full file:font-medium hover:file:bg-white/10 file:transition-colors file:cursor-pointer overflow-hidden p-0"
+                  onChange={(e) =>
+                    setFiles({
+                      ...files,
+                      sessionBell: e.target.files[0] || null,
+                    })
+                  }
+                />
+              </div>
+              <details className="rounded-lg border border-border/20 bg-[#1a1715] overflow-hidden group">
+                <summary className="cursor-pointer text-sm font-medium p-4 flex items-center gap-2 hover:bg-white/5 transition-colors">
+                  <Play className="w-4 h-4 text-muted-foreground group-open:rotate-90 transition-transform" />
+                  Legacy Audio Fallback
+                </summary>
+                <div className="px-4 pb-4">
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Only for legacy fallback projects. New projects should use
+                    the project audio library and session mapping.
                   </p>
-                  <label className="space-y-1 text-sm">
-                    Focus Audio
-                    <Input
-                      type="file"
-                      accept="audio/mpeg,audio/wav,audio/mp4,audio/x-m4a"
-                      onChange={(event) =>
-                        updateSessionFile(
-                          row.sessionIndex,
-                          "focusAudioFile",
-                          event.target.files[0] || null,
-                        )
-                      }
-                    />
-                    {row.focusAudioFile && (
-                      <span className="block text-xs text-muted-foreground">
-                        {row.focusAudioFile.name}
-                      </span>
-                    )}
-                  </label>
-                  {needsBreak && (
-                    <label className="space-y-1 text-sm">
-                      Break Audio
+                  <div className="mt-4 grid gap-4 md:grid-cols-2">
+                    <label className="space-y-2 text-sm text-foreground">
+                      Legacy Focus Audio
                       <Input
                         type="file"
-                        accept="audio/mpeg,audio/wav,audio/mp4,audio/x-m4a"
-                        onChange={(event) =>
-                          updateSessionFile(
-                            row.sessionIndex,
-                            "breakAudioFile",
-                            event.target.files[0] || null,
-                          )
+                        accept="audio/*"
+                        className="bg-[#161311] border-border/20 h-11 text-muted-foreground file:bg-[#27211d] file:text-foreground file:border-0 file:border-r file:border-border/20 file:mr-4 file:px-4 file:h-full file:font-medium hover:file:bg-white/10 file:transition-colors file:cursor-pointer overflow-hidden p-0"
+                        onChange={(e) =>
+                          setFiles({ ...files, audio: e.target.files[0] })
                         }
                       />
-                      {row.breakAudioFile && (
-                        <span className="block text-xs text-muted-foreground">
-                          {row.breakAudioFile.name}
-                        </span>
-                      )}
                     </label>
-                  )}
+                    <label className="space-y-2 text-sm text-foreground">
+                      Legacy Break Audio
+                      <Input
+                        type="file"
+                        accept="audio/*"
+                        className="bg-[#161311] border-border/20 h-11 text-muted-foreground file:bg-[#27211d] file:text-foreground file:border-0 file:border-r file:border-border/20 file:mr-4 file:px-4 file:h-full file:font-medium hover:file:bg-white/10 file:transition-colors file:cursor-pointer overflow-hidden p-0"
+                        onChange={(e) =>
+                          setFiles({ ...files, breakAudio: e.target.files[0] })
+                        }
+                      />
+                    </label>
+                  </div>
                 </div>
-              );
-            })}
-          </CardContent>
-        </Card>
+              </details>
+            </CardContent>
+          </Card>
 
-        <Button type="submit" disabled={loading} className="w-full" size="lg">
-          {loading ? "Creating Project..." : "Create Project & Upload Audio"}
-        </Button>
-      </form>
+          <Card className="rounded-2xl bg-[#241e1a] border-border/10 shadow-none overflow-hidden">
+            <div className="p-6 border-b border-border/5 flex items-center gap-2">
+              <Timer className="w-5 h-5 text-orange-400" />
+              <h2 className="text-base font-semibold text-foreground">
+                Pomodoro Config
+              </h2>
+            </div>
+            <CardContent className="p-6 space-y-6">
+              <div className="space-y-2">
+                <Label className="text-foreground">Pomodoro Format</Label>
+                <Select value={form.pomodoroPreset} onValueChange={setPreset}>
+                  <SelectTrigger className="w-full bg-[#1a1715] border-border/20 h-11 text-foreground">
+                    <SelectValue>
+                      {(value) => POMODORO_PRESET_LABELS[value] || "Custom"}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#241e1a] border-border/20 text-foreground">
+                    <SelectItem
+                      value="classic_25_5"
+                      className="hover:bg-white/5 focus:bg-white/5 focus:text-foreground"
+                    >
+                      25/5 Classic Pomodoro
+                    </SelectItem>
+                    <SelectItem
+                      value="deep_work_50_10"
+                      className="hover:bg-white/5 focus:bg-white/5 focus:text-foreground"
+                    >
+                      50/10 Deep Work Pomodoro
+                    </SelectItem>
+                    <SelectItem
+                      value="custom"
+                      className="hover:bg-white/5 focus:bg-white/5 focus:text-foreground"
+                    >
+                      Custom
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground pt-1">
+                  Focus: {form.focusDurationMinutes} min · Break:{" "}
+                  {form.breakDurationMinutes} min · Sessions:{" "}
+                  {form.sessionCount} · Final break:{" "}
+                  {form.includeFinalBreak ? "Included" : "Excluded"}
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label className="text-foreground">
+                    Focus Duration (minutes)
+                  </Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    className="bg-[#1a1715] border-border/20 h-11 text-foreground"
+                    value={form.focusDurationMinutes}
+                    onChange={(e) =>
+                      updateControlledValue(
+                        "focusDurationMinutes",
+                        parseInt(e.target.value),
+                      )
+                    }
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-foreground">
+                    Break Duration (minutes)
+                  </Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    className="bg-[#1a1715] border-border/20 h-11 text-foreground"
+                    value={form.breakDurationMinutes}
+                    onChange={(e) =>
+                      updateControlledValue(
+                        "breakDurationMinutes",
+                        parseInt(e.target.value),
+                      )
+                    }
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label className="text-foreground">Session Count</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    className="bg-[#1a1715] border-border/20 h-11 text-foreground"
+                    value={form.sessionCount}
+                    onChange={(e) =>
+                      updateControlledValue(
+                        "sessionCount",
+                        parseInt(e.target.value),
+                      )
+                    }
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-foreground">Timer Text Color</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="color"
+                      className="w-12 h-11 p-1 bg-[#1a1715] border-border/20 cursor-pointer rounded-md overflow-hidden"
+                      value={form.timerTextColor}
+                      onChange={(e) =>
+                        setForm({ ...form, timerTextColor: e.target.value })
+                      }
+                    />
+                    <Input
+                      type="text"
+                      className="flex-1 bg-[#1a1715] border-border/20 h-11 text-foreground"
+                      value={form.timerTextColor}
+                      onChange={(e) =>
+                        setForm({ ...form, timerTextColor: e.target.value })
+                      }
+                      placeholder="#ffffff"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3 pt-2">
+                <Switch
+                  className="data-[state=checked]:bg-orange-400"
+                  checked={form.includeFinalBreak}
+                  onCheckedChange={(v) =>
+                    updateControlledValue("includeFinalBreak", v)
+                  }
+                />
+                <Label className="text-foreground font-medium cursor-pointer">
+                  Include Final Break
+                </Label>
+              </div>
+
+              <div className="mt-6 p-4 bg-[#1a1715] border border-border/10 rounded-xl flex items-center gap-3">
+                <Hourglass className="w-5 h-5 text-orange-400" />
+                <p className="font-semibold text-sm text-foreground">
+                  Estimated duration:{" "}
+                  <span className="text-muted-foreground">
+                    {estimatedDuration}
+                  </span>
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {loading && (
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span>Creating & Uploading...</span>
+                <span>{uploadProgress}%</span>
+              </div>
+              <Progress value={uploadProgress} />
+            </div>
+          )}
+
+          <Card className="rounded-2xl bg-[#241e1a] border-border/10 shadow-none overflow-hidden">
+            <div className="p-6 border-b border-border/5 flex items-center gap-2">
+              <AudioLines className="w-5 h-5 text-orange-400" />
+              <h2 className="text-base font-semibold text-foreground">
+                Session Audio Mapping
+              </h2>
+            </div>
+            <CardContent className="p-6 space-y-6">
+              <p className="text-sm text-muted-foreground">
+                Each selected file is uploaded once for this segment and saved
+                as an audio asset ID.
+              </p>
+              <div className="space-y-4">
+                {sessionMappings.map((row) => {
+                  const needsBreak =
+                    row.sessionIndex < form.sessionCount ||
+                    form.includeFinalBreak;
+                  return (
+                    <div
+                      key={row.sessionIndex}
+                      className="grid gap-6 rounded-xl border border-border/10 bg-[#1a1715] p-5 md:grid-cols-2"
+                    >
+                      <p className="font-medium text-sm text-foreground md:col-span-2">
+                        Session {row.sessionIndex}
+                      </p>
+                      <label className="space-y-2 text-sm text-foreground">
+                        Focus Audio
+                        <Input
+                          type="file"
+                          accept="audio/mpeg,audio/wav,audio/mp4,audio/x-m4a"
+                          className="bg-[#241e1a] border-border/20 h-11 text-muted-foreground file:bg-[#27211d] file:text-foreground file:border-0 file:border-r file:border-border/20 file:mr-4 file:px-4 file:h-full file:font-medium hover:file:bg-white/10 file:transition-colors file:cursor-pointer overflow-hidden p-0"
+                          onChange={(event) =>
+                            updateSessionFile(
+                              row.sessionIndex,
+                              "focusAudioFile",
+                              event.target.files[0] || null,
+                            )
+                          }
+                        />
+                        {row.focusAudioFile && (
+                          <span className="block text-xs text-muted-foreground mt-2">
+                            {row.focusAudioFile.name}
+                          </span>
+                        )}
+                      </label>
+                      {needsBreak && (
+                        <label className="space-y-2 text-sm text-foreground">
+                          Break Audio
+                          <Input
+                            type="file"
+                            accept="audio/mpeg,audio/wav,audio/mp4,audio/x-m4a"
+                            className="bg-[#241e1a] border-border/20 h-11 text-muted-foreground file:bg-[#27211d] file:text-foreground file:border-0 file:border-r file:border-border/20 file:mr-4 file:px-4 file:h-full file:font-medium hover:file:bg-white/10 file:transition-colors file:cursor-pointer overflow-hidden p-0"
+                            onChange={(event) =>
+                              updateSessionFile(
+                                row.sessionIndex,
+                                "breakAudioFile",
+                                event.target.files[0] || null,
+                              )
+                            }
+                          />
+                          {row.breakAudioFile && (
+                            <span className="block text-xs text-muted-foreground mt-2">
+                              {row.breakAudioFile.name}
+                            </span>
+                          )}
+                        </label>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full h-14 bg-orange-400 hover:bg-orange-500 text-orange-950 font-bold rounded-xl transition-colors text-base"
+          >
+            <CloudUpload className="w-5 h-5 mr-2" />
+            {loading ? "Creating Project..." : "Create Project & Upload Audio"}
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }
