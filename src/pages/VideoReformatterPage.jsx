@@ -1,5 +1,17 @@
 import React, { useState, useRef } from "react";
-import { Upload, RefreshCw, Download, Video } from "lucide-react";
+import {
+  Upload,
+  RefreshCw,
+  Download,
+  Video,
+  Crop,
+  HelpCircle,
+  User,
+  ChevronDown,
+  Play,
+  Volume2,
+  Maximize,
+} from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -131,10 +143,27 @@ export default function VideoReformatterPage() {
   const bottomBarPct = (bottomBar / 1080) * 100;
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="flex-1 flex flex-col min-h-0 text-foreground">
+      {/* Top Header */}
+      <header className="flex h-[60px] shrink-0 items-center justify-between border-b border-border/10 px-8">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+          <Crop className="w-4 h-4 text-orange-400" />
+          <span>Video Reformatter</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <button className="text-muted-foreground hover:text-foreground transition-colors">
+            <HelpCircle className="w-5 h-5" />
+          </button>
+          <button className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/20 bg-[#241e1a] hover:bg-white/5 transition-colors">
+            <User className="w-4 h-4 text-muted-foreground" />
+            <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+          </button>
+        </div>
+      </header>
+
+      <div className="p-8 space-y-8 max-w-[1400px] w-full mx-auto overflow-y-auto pb-20">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Video Reformatter
           </h1>
           <p className="text-muted-foreground mt-2">
@@ -142,89 +171,91 @@ export default function VideoReformatterPage() {
             locally without saving to projects.
           </p>
         </div>
-      </div>
 
-      {error && (
-        <div className="bg-destructive/15 text-destructive p-4 rounded-md border border-destructive/20 text-sm">
-          {error}
-        </div>
-      )}
+        {error && (
+          <div className="bg-red-950/20 text-red-400 p-4 rounded-xl border border-red-900/30 text-sm">
+            {error}
+          </div>
+        )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-4">
-          <Card className="overflow-hidden border-border bg-card">
-            <div
-              ref={containerRef}
-              className="relative w-full aspect-video bg-black overflow-hidden select-none cursor-move"
-              onPointerDown={handlePointerDown}
-              onPointerMove={handlePointerMove}
-              onPointerUp={handlePointerUp}
-              onPointerCancel={handlePointerUp}
-            >
-              {!previewUrl ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground pointer-events-none">
-                  <Video className="w-12 h-12 mb-4 opacity-50" />
-                  <p>Upload a video to preview</p>
-                </div>
-              ) : (
-                <>
-                  <video
-                    ref={videoRef}
-                    src={previewUrl}
-                    className="absolute w-full h-full object-contain pointer-events-none"
-                    style={{
-                      transform: videoTransform,
-                      transformOrigin: "center center",
-                    }}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  />
-                  <div
-                    className="absolute top-0 left-0 w-full bg-black pointer-events-none"
-                    style={{ height: `${topBarPct}%` }}
-                  />
-                  <div
-                    className="absolute bottom-0 left-0 w-full bg-black pointer-events-none"
-                    style={{ height: `${bottomBarPct}%` }}
-                  />
-                </>
-              )}
-            </div>
-          </Card>
-        </div>
-
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Adjustments</CardTitle>
-              <CardDescription>Drag the video to reposition</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {!file && (
-                <div className="flex items-center justify-center border-2 border-dashed border-border rounded-lg p-6 hover:bg-accent/50 transition-colors">
-                  <label className="flex flex-col items-center cursor-pointer w-full">
-                    <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
-                    <span className="text-sm font-medium">Select Video</span>
-                    <input
-                      type="file"
-                      className="hidden"
-                      accept="video/*"
-                      onChange={handleFileChange}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <div className="overflow-hidden border border-border/10 rounded-2xl bg-[#241e1a] shadow-none h-full min-h-[500px]">
+              <div
+                ref={containerRef}
+                className="relative w-full h-full bg-[#f8f5f0] overflow-hidden select-none cursor-move rounded-2xl"
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerUp}
+              >
+                {!previewUrl ? (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground bg-black pointer-events-none">
+                    <Video className="w-12 h-12 mb-4 opacity-50 text-orange-400" />
+                    <p>Upload a video to preview</p>
+                  </div>
+                ) : (
+                  <>
+                    <video
+                      ref={videoRef}
+                      src={previewUrl}
+                      className="absolute w-full h-full object-contain pointer-events-none"
+                      style={{
+                        transform: videoTransform,
+                        transformOrigin: "center center",
+                      }}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
                     />
-                  </label>
-                </div>
-              )}
+                    <div
+                      className="absolute top-0 left-0 w-full bg-[#0a0a0a] pointer-events-none transition-all duration-75"
+                      style={{ height: `${topBarPct}%` }}
+                    />
+                    <div
+                      className="absolute bottom-0 left-0 w-full bg-[#0a0a0a] pointer-events-none transition-all duration-75"
+                      style={{ height: `${bottomBarPct}%` }}
+                    />
 
-              {file && (
-                <>
-                  <div className="flex items-center justify-between text-sm mb-4">
-                    <span className="text-muted-foreground truncate max-w-[200px]">
-                      {file.name}
-                    </span>
-                    <label className="text-primary hover:underline cursor-pointer">
-                      Change
+                    {/* Mock Video Controls */}
+                    <div className="absolute bottom-4 left-4 flex gap-2 pointer-events-auto">
+                      <button className="p-2 rounded-lg bg-[#241e1a]/80 hover:bg-[#241e1a] text-white border border-white/5 transition-colors">
+                        <Play className="w-5 h-5" />
+                      </button>
+                      <button className="p-2 rounded-lg bg-[#241e1a]/80 hover:bg-[#241e1a] text-white border border-white/5 transition-colors">
+                        <Volume2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                    <div className="absolute bottom-4 right-4 pointer-events-auto">
+                      <button className="p-2 rounded-lg bg-[#241e1a]/80 hover:bg-[#241e1a] text-white border border-white/5 transition-colors">
+                        <Maximize className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <Card className="rounded-2xl bg-[#241e1a] border-border/10 shadow-none overflow-hidden">
+              <div className="p-6 border-b border-border/5">
+                <h2 className="text-base font-semibold text-foreground">
+                  Adjustments
+                </h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Drag the video to reposition
+                </p>
+              </div>
+              <CardContent className="p-6 space-y-6">
+                {!file && (
+                  <div className="flex items-center justify-center border border-dashed border-border/20 bg-[#1a1715] rounded-xl p-8 hover:bg-white/5 transition-colors cursor-pointer">
+                    <label className="flex flex-col items-center cursor-pointer w-full">
+                      <Upload className="w-8 h-8 mb-3 text-orange-400" />
+                      <span className="text-sm font-medium text-foreground">
+                        Select Video
+                      </span>
                       <input
                         type="file"
                         className="hidden"
@@ -233,136 +264,161 @@ export default function VideoReformatterPage() {
                       />
                     </label>
                   </div>
+                )}
 
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <Label>Zoom</Label>
-                        <span className="text-xs text-muted-foreground">
-                          {zoom.toFixed(2)}x
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0.1"
-                        max="5.0"
-                        step="0.01"
-                        value={zoom}
-                        onChange={(e) => setZoom(parseFloat(e.target.value))}
-                        className="w-full accent-primary h-2 bg-secondary rounded-lg appearance-none cursor-pointer"
-                      />
+                {file && (
+                  <>
+                    <div className="flex items-center justify-between text-sm mb-6 pb-4 border-b border-border/5">
+                      <span className="text-muted-foreground font-medium truncate max-w-[200px]">
+                        {file.name}
+                      </span>
+                      <label className="text-orange-400 font-medium hover:text-orange-300 transition-colors cursor-pointer">
+                        Change
+                        <input
+                          type="file"
+                          className="hidden"
+                          accept="video/*"
+                          onChange={handleFileChange}
+                        />
+                      </label>
                     </div>
 
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <Label>Position X</Label>
-                        <span className="text-xs text-muted-foreground">
-                          {x} px
-                        </span>
+                    <div className="space-y-6">
+                      <div className="space-y-3">
+                        <div className="flex justify-between">
+                          <Label className="text-foreground">Zoom</Label>
+                          <span className="text-xs text-muted-foreground">
+                            {zoom.toFixed(2)}x
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0.1"
+                          max="5.0"
+                          step="0.01"
+                          value={zoom}
+                          onChange={(e) => setZoom(parseFloat(e.target.value))}
+                          className="w-full h-1.5 bg-[#1a1715] rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-orange-400 hover:[&::-webkit-slider-thumb]:bg-orange-300"
+                        />
                       </div>
-                      <input
-                        type="range"
-                        min="-1920"
-                        max="1920"
-                        step="1"
-                        value={x}
-                        onChange={(e) => setX(parseInt(e.target.value))}
-                        className="w-full accent-primary h-2 bg-secondary rounded-lg appearance-none cursor-pointer"
-                      />
+
+                      <div className="space-y-3">
+                        <div className="flex justify-between">
+                          <Label className="text-foreground">Position X</Label>
+                          <span className="text-xs text-muted-foreground">
+                            {x} px
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min="-1920"
+                          max="1920"
+                          step="1"
+                          value={x}
+                          onChange={(e) => setX(parseInt(e.target.value))}
+                          className="w-full h-1.5 bg-[#1a1715] rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-orange-400 hover:[&::-webkit-slider-thumb]:bg-orange-300"
+                        />
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="flex justify-between">
+                          <Label className="text-foreground">Position Y</Label>
+                          <span className="text-xs text-muted-foreground">
+                            {y} px
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min="-1080"
+                          max="1080"
+                          step="1"
+                          value={y}
+                          onChange={(e) => setY(parseInt(e.target.value))}
+                          className="w-full h-1.5 bg-[#1a1715] rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-orange-400 hover:[&::-webkit-slider-thumb]:bg-orange-300"
+                        />
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="flex justify-between">
+                          <Label className="text-foreground">
+                            Top Black Bar
+                          </Label>
+                          <span className="text-xs text-muted-foreground">
+                            {topBar} px
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0"
+                          max="540"
+                          step="1"
+                          value={topBar}
+                          onChange={(e) => setTopBar(parseInt(e.target.value))}
+                          className="w-full h-1.5 bg-[#1a1715] rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-orange-400 hover:[&::-webkit-slider-thumb]:bg-orange-300"
+                        />
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="flex justify-between">
+                          <Label className="text-foreground">
+                            Bottom Black Bar
+                          </Label>
+                          <span className="text-xs text-muted-foreground">
+                            {bottomBar} px
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0"
+                          max="540"
+                          step="1"
+                          value={bottomBar}
+                          onChange={(e) =>
+                            setBottomBar(parseInt(e.target.value))
+                          }
+                          className="w-full h-1.5 bg-[#1a1715] rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-orange-400 hover:[&::-webkit-slider-thumb]:bg-orange-300"
+                        />
+                      </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <Label>Position Y</Label>
-                        <span className="text-xs text-muted-foreground">
-                          {y} px
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min="-1080"
-                        max="1080"
-                        step="1"
-                        value={y}
-                        onChange={(e) => setY(parseInt(e.target.value))}
-                        className="w-full accent-primary h-2 bg-secondary rounded-lg appearance-none cursor-pointer"
-                      />
+                    <div className="flex gap-4 pt-8">
+                      <Button
+                        variant="outline"
+                        className="flex-[0.4] bg-[#1a1715] hover:bg-white/5 border-border/20 text-foreground h-12 rounded-xl transition-colors"
+                        onClick={() => {
+                          setZoom(1);
+                          setX(0);
+                          setY(0);
+                          setTopBar(0);
+                          setBottomBar(0);
+                        }}
+                        disabled={isProcessing}
+                      >
+                        Reset
+                      </Button>
+                      <Button
+                        className="flex-1 bg-orange-400 hover:bg-orange-500 text-orange-950 font-bold h-12 rounded-xl transition-colors"
+                        onClick={handleProcess}
+                        disabled={isProcessing}
+                      >
+                        {isProcessing ? (
+                          <>
+                            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <Download className="w-5 h-5 mr-2" />
+                            Download
+                          </>
+                        )}
+                      </Button>
                     </div>
-
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <Label>Top Black Bar</Label>
-                        <span className="text-xs text-muted-foreground">
-                          {topBar} px
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="540"
-                        step="1"
-                        value={topBar}
-                        onChange={(e) => setTopBar(parseInt(e.target.value))}
-                        className="w-full accent-primary h-2 bg-secondary rounded-lg appearance-none cursor-pointer"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <Label>Bottom Black Bar</Label>
-                        <span className="text-xs text-muted-foreground">
-                          {bottomBar} px
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="540"
-                        step="1"
-                        value={bottomBar}
-                        onChange={(e) => setBottomBar(parseInt(e.target.value))}
-                        className="w-full accent-primary h-2 bg-secondary rounded-lg appearance-none cursor-pointer"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2 pt-4">
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                      onClick={() => {
-                        setZoom(1);
-                        setX(0);
-                        setY(0);
-                        setTopBar(0);
-                        setBottomBar(0);
-                      }}
-                      disabled={isProcessing}
-                    >
-                      Reset
-                    </Button>
-                    <Button
-                      className="flex-2"
-                      onClick={handleProcess}
-                      disabled={isProcessing}
-                    >
-                      {isProcessing ? (
-                        <>
-                          <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                          Processing...
-                        </>
-                      ) : (
-                        <>
-                          <Download className="w-4 h-4 mr-2" />
-                          Download
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </div>

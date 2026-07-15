@@ -2,16 +2,57 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>fe</title>
+    <title>Focus Studio | Pomodoro Video Factory</title>
+
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Focus Studio | Pomodoro Video Factory" />
+    <meta
+      name="description"
+      content="Create aesthetic focus and deep work videos with custom pomodoro timers, cinematic backgrounds, and relaxing audio."
+    />
+    <meta
+      name="keywords"
+      content="pomodoro, focus timer, study timer, deep work, lo-fi video, productivity tool, video generator"
+    />
+    <meta name="author" content="Focus Studio" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://pomodoro-factory.com/" />
+    <meta property="og:title" content="Focus Studio | Pomodoro Video Factory" />
+    <meta
+      property="og:description"
+      content="Create aesthetic focus and deep work videos with custom pomodoro timers, cinematic backgrounds, and relaxing audio."
+    />
+    <meta property="og:image" content="/logo.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://pomodoro-factory.com/" />
+    <meta
+      property="twitter:title"
+      content="Focus Studio | Pomodoro Video Factory"
+    />
+    <meta
+      property="twitter:description"
+      content="Create aesthetic focus and deep work videos with custom pomodoro timers, cinematic backgrounds, and relaxing audio."
+    />
+    <meta property="twitter:image" content="/logo.png" />
     <script>
       (() => {
         try {
           const key = "pomodoro-video-factory-theme";
           const saved = localStorage.getItem(key);
-          const theme = ["light", "dark", "system"].includes(saved) ? saved : "system";
-          const dark = theme === "dark" || (theme === "system" && window.matchMedia?.("(prefers-color-scheme: dark)").matches);
+          const theme = ["light", "dark", "system"].includes(saved)
+            ? saved
+            : "system";
+          const dark =
+            theme === "dark" ||
+            (theme === "system" &&
+              window.matchMedia?.("(prefers-color-scheme: dark)").matches);
           document.documentElement.classList.toggle("dark", dark);
         } catch {}
       })();
