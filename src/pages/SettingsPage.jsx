@@ -71,12 +71,6 @@ export default function SettingsPage() {
           <Settings className="w-4 h-4 text-orange-400" />
           <span>Settings</span>
         </div>
-        <div className="flex items-center gap-4">
-          <button className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/20 bg-[#241e1a] hover:bg-white/5 transition-colors">
-            <User className="w-4 h-4 text-muted-foreground" />
-            <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-          </button>
-        </div>
       </header>
 
       <div className="p-8 space-y-8 max-w-[1400px] w-full mx-auto overflow-y-auto pb-20">

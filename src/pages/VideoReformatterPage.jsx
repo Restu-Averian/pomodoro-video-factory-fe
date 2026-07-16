@@ -5,12 +5,6 @@ import {
   Download,
   Video,
   Crop,
-  HelpCircle,
-  User,
-  ChevronDown,
-  Play,
-  Volume2,
-  Maximize,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
@@ -147,17 +141,8 @@ export default function VideoReformatterPage() {
       {/* Top Header */}
       <header className="flex h-[60px] shrink-0 items-center justify-between border-b border-border/10 px-8">
         <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
-          <Crop className="w-4 h-4 text-orange-400" />
+          <Crop className="w-4 h-4" />
           <span>Video Reformatter</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <button className="text-muted-foreground hover:text-foreground transition-colors">
-            <HelpCircle className="w-5 h-5" />
-          </button>
-          <button className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/20 bg-[#241e1a] hover:bg-white/5 transition-colors">
-            <User className="w-4 h-4 text-muted-foreground" />
-            <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-          </button>
         </div>
       </header>
 
@@ -183,7 +168,7 @@ export default function VideoReformatterPage() {
             <div className="overflow-hidden border border-border/10 rounded-2xl bg-[#241e1a] shadow-none h-full min-h-[500px]">
               <div
                 ref={containerRef}
-                className="relative w-full h-full bg-[#f8f5f0] overflow-hidden select-none cursor-move rounded-2xl"
+                className="relative w-full h-full bg-black overflow-hidden select-none cursor-move rounded-2xl"
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
@@ -218,20 +203,6 @@ export default function VideoReformatterPage() {
                       style={{ height: `${bottomBarPct}%` }}
                     />
 
-                    {/* Mock Video Controls */}
-                    <div className="absolute bottom-4 left-4 flex gap-2 pointer-events-auto">
-                      <button className="p-2 rounded-lg bg-[#241e1a]/80 hover:bg-[#241e1a] text-white border border-white/5 transition-colors">
-                        <Play className="w-5 h-5" />
-                      </button>
-                      <button className="p-2 rounded-lg bg-[#241e1a]/80 hover:bg-[#241e1a] text-white border border-white/5 transition-colors">
-                        <Volume2 className="w-5 h-5" />
-                      </button>
-                    </div>
-                    <div className="absolute bottom-4 right-4 pointer-events-auto">
-                      <button className="p-2 rounded-lg bg-[#241e1a]/80 hover:bg-[#241e1a] text-white border border-white/5 transition-colors">
-                        <Maximize className="w-5 h-5" />
-                      </button>
-                    </div>
                   </>
                 )}
               </div>
@@ -240,7 +211,7 @@ export default function VideoReformatterPage() {
 
           <div className="space-y-6">
             <Card className="rounded-2xl bg-[#241e1a] border-border/10 shadow-none overflow-hidden">
-              <div className="p-6 border-b border-border/5">
+              <div className="p-6 pb-2">
                 <h2 className="text-base font-semibold text-foreground">
                   Adjustments
                 </h2>
@@ -248,7 +219,7 @@ export default function VideoReformatterPage() {
                   Drag the video to reposition
                 </p>
               </div>
-              <CardContent className="p-6 space-y-6">
+              <CardContent className="p-6 pt-4 space-y-6">
                 {!file && (
                   <div className="flex items-center justify-center border border-dashed border-border/20 bg-[#1a1715] rounded-xl p-8 hover:bg-white/5 transition-colors cursor-pointer">
                     <label className="flex flex-col items-center cursor-pointer w-full">
@@ -268,7 +239,7 @@ export default function VideoReformatterPage() {
 
                 {file && (
                   <>
-                    <div className="flex items-center justify-between text-sm mb-6 pb-4 border-b border-border/5">
+                    <div className="flex items-center justify-between text-sm mb-6">
                       <span className="text-muted-foreground font-medium truncate max-w-[200px]">
                         {file.name}
                       </span>
@@ -287,7 +258,7 @@ export default function VideoReformatterPage() {
                       <div className="space-y-3">
                         <div className="flex justify-between">
                           <Label className="text-foreground">Zoom</Label>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-sm text-muted-foreground">
                             {zoom.toFixed(2)}x
                           </span>
                         </div>
@@ -305,7 +276,7 @@ export default function VideoReformatterPage() {
                       <div className="space-y-3">
                         <div className="flex justify-between">
                           <Label className="text-foreground">Position X</Label>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-sm text-muted-foreground">
                             {x} px
                           </span>
                         </div>
@@ -323,7 +294,7 @@ export default function VideoReformatterPage() {
                       <div className="space-y-3">
                         <div className="flex justify-between">
                           <Label className="text-foreground">Position Y</Label>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-sm text-muted-foreground">
                             {y} px
                           </span>
                         </div>
@@ -343,7 +314,7 @@ export default function VideoReformatterPage() {
                           <Label className="text-foreground">
                             Top Black Bar
                           </Label>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-sm text-muted-foreground">
                             {topBar} px
                           </span>
                         </div>
@@ -363,7 +334,7 @@ export default function VideoReformatterPage() {
                           <Label className="text-foreground">
                             Bottom Black Bar
                           </Label>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-sm text-muted-foreground">
                             {bottomBar} px
                           </span>
                         </div>
@@ -408,7 +379,7 @@ export default function VideoReformatterPage() {
                           </>
                         ) : (
                           <>
-                            <Download className="w-5 h-5 mr-2" />
+                            <Download className="w-4 h-4 mr-2" />
                             Download
                           </>
                         )}
